@@ -12,9 +12,11 @@ from core import parsear_funcion, calcular_dominio, calcular_recorrido, intersec
 from plot import graficar_funcion
 from config import TITULO_GRAFICA
 
+
 class AnalizadorApp:
     """
     Clase principal para la interfaz gráfica del Analizador de Funciones.
+    Ahora incluye una pestaña de instrucciones de uso.
     """
     def __init__(self, root: Any):
         self.root = root
@@ -22,23 +24,35 @@ class AnalizadorApp:
         self.root.geometry("800x660")
         self.root.resizable(False, False)
         self.estilo = ttk.Style("flatly")
+        # Notebook para pestañas
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill='both', expand=True)
+        # Pestaña principal
+        self.tab_principal = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_principal, text="Analizador")
+        # Pestaña de instrucciones
+        self.tab_instrucciones = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_instrucciones, text="Instrucciones de uso")
         # Configuración de placeholders
         self.placeholder_funcion = " Ejemplo: 2x^2 + 4"
         self.placeholder_color = "grey"
         self.text_color = "black"
         self.placeholder_activo = True
-        # Crear componentes UI
-        self._crear_titulo()
-        self._crear_entradas()
-        self._crear_botones()
-        self._crear_resultados()
-        self._crear_pie()
+        # Crear componentes en pestaña principal
+        self._crear_titulo(self.tab_principal)
+        self._crear_entradas(self.tab_principal)
+        self._crear_botones(self.tab_principal)
+        self._crear_resultados(self.tab_principal)
+        self._crear_pie(self.tab_principal)
+        # Crear instrucciones en la segunda pestaña
+        self._crear_instrucciones(self.tab_instrucciones)
 
-    def _crear_titulo(self) -> None:
-        ttk.Label(self.root, text="Analizador de Funciones", font=("Segoe UI", 18, "bold")).pack(pady=12)
 
-    def _crear_entradas(self) -> None:
-        frame = ttk.Frame(self.root)
+    def _crear_titulo(self, parent: Any) -> None:
+        ttk.Label(parent, text="Analizador de Funciones", font=("Segoe UI", 18, "bold")).pack(pady=12)
+
+    def _crear_entradas(self, parent: Any) -> None:
+        frame = ttk.Frame(parent)
         frame.pack(pady=5)
         self.entry_funcion = self._entrada(frame, "Función f(x):", 0, self.placeholder_funcion, 45, placeholder=True)
         self.entry_valor = self._entrada(frame, "Valor de x (opcional):", 1, "", 20)
@@ -56,8 +70,8 @@ class AnalizadorApp:
             entry.insert(0, valor_defecto)
         return entry
 
-    def _crear_botones(self) -> None:
-        frame = ttk.Frame(self.root)
+    def _crear_botones(self, parent: Any) -> None:
+        frame = ttk.Frame(parent)
         frame.pack(pady=10)
         self._boton(frame, "Analizar", self.on_analizar, 0, PRIMARY)
         self._boton(frame, "Limpiar", self.on_limpiar, 1, WARNING)
@@ -67,16 +81,65 @@ class AnalizadorApp:
         btn = ttk.Button(parent, text=texto, command=accion, width=18, bootstyle=estilo)
         btn.grid(row=0, column=columna, padx=6)
 
-    def _crear_resultados(self) -> None:
-        ttk.Label(self.root, text="Resultados detallados:", font=("Segoe UI", 11, "bold")).pack(pady=(8, 4))
-        self.text_result = scrolledtext.ScrolledText(self.root, height=16, width=94, font=("Consolas", 10))
+    def _crear_resultados(self, parent: Any) -> None:
+        ttk.Label(parent, text="Resultados detallados:", font=("Segoe UI", 11, "bold")).pack(pady=(8, 4))
+        self.text_result = scrolledtext.ScrolledText(parent, height=16, width=94, font=("Consolas", 10))
         self.text_result.pack(padx=10, pady=4)
 
-    def _crear_pie(self) -> None:
+    def _crear_pie(self, parent: Any) -> None:
         pie_texto = (
             "Incluye: Dominio, Recorrido, Intersecciones, Evaluación simbólica, Gráfica y errores manejados."
         )
-        ttk.Label(self.root, text=pie_texto, wraplength=760, justify='left').pack(pady=(10, 0))
+        ttk.Label(parent, text=pie_texto, wraplength=760, justify='left').pack(pady=(10, 0))
+
+    def _crear_instrucciones(self, parent: Any) -> None:
+        instrucciones = (
+            """
+            📝  INSTRUCCIONES DE USO
+            ──────────────────────────────
+
+            1️⃣  Ingresa la función en el campo "Función f(x)".
+                Ejemplo:  x^2 - 4   |   2x^2+3x-1   |   sin(x)
+
+            2️⃣  (Opcional) Ingresa un valor para x en el campo correspondiente para evaluar la función en ese punto.
+
+            3️⃣  Haz clic en "Analizar" para ver:
+                • Dominio
+                • Recorrido
+                • Intersecciones
+                • Evaluación simbólica
+                • Gráfica profesional
+
+            4️⃣  Usa "Limpiar" para borrar los campos y resultados.
+
+            5️⃣  Haz clic en "Ayuda / Ejemplos" para ver ejemplos de funciones válidas.
+
+            ──────────────────────────────
+            💡  NOTAS IMPORTANTES
+            ──────────────────────────────
+            • Puedes usar ^ para potencias (se convierte internamente a **).
+            • Solo se admite la variable x.
+            • Si la función tiene discontinuidades, la gráfica las omitirá en esos puntos.
+            • El resultado incluye justificación simbólica y gráfica profesional.
+
+            ──────────────────────────────
+            📚  EJEMPLOS DE FUNCIONES VÁLIDAS
+            ──────────────────────────────
+            - x^2 - 4
+            - 1/(x-2)
+            - (x+1)/(x-1)
+            - 2x^3 - x
+            - sin(x)
+            """
+        )
+        frame = ttk.Frame(parent)
+        frame.pack(fill='both', expand=True, padx=18, pady=18)
+        label_titulo = ttk.Label(frame, text="Instrucciones de uso", font=("Segoe UI", 16, "bold"), foreground="#2a7ae2")
+        label_titulo.pack(pady=(0,10))
+        text_instr = scrolledtext.ScrolledText(frame, height=26, width=90, font=("Segoe UI", 12), wrap='word', background="#f7f7fa")
+        text_instr.pack(padx=6, pady=6, fill='both', expand=True)
+        text_instr.insert('1.0', instrucciones)
+        text_instr.configure(state='disabled')
 
     # === Placeholder handling ===
 
@@ -127,21 +190,37 @@ class AnalizadorApp:
             messagebox.showwarning("Función no ingresada", "No se ha insertado ninguna función.\nPor favor escríbela antes de analizar.")
             return
 
+
         try:
             f = parsear_funcion(funcion_txt)
-            self.text_result.insert('end', f"Función simbólica: {f}\n\n")
+            self.text_result.insert('end', f"🔎  Función simbólica:\n{sp.pretty(f)}\n\n")
+
+            # Dominio
+            self.text_result.insert('end', "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+            self.text_result.insert('end', "📐  Dominio\n")
+            self.text_result.insert('end', "Se utiliza continuous_domain de SymPy para encontrar el conjunto de valores reales donde la función es continua.\n")
+            self.text_result.insert('end', f"Expresión analizada: {sp.pretty(f)}\n")
+            dominio = calcular_dominio(f)
+            self.text_result.insert('end', f"Dominio calculado: {dominio}\n\n")
+
+            # Recorrido
+            self.text_result.insert('end', "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+            self.text_result.insert('end', "📊  Recorrido\n")
+            self.text_result.insert('end', "Se utiliza function_range de SymPy para determinar el conjunto de valores posibles de la función en el dominio calculado.\n")
+            self.text_result.insert('end', f"Dominio usado: {dominio}\n")
+            recorrido = calcular_recorrido(f, dominio)
+            self.text_result.insert('end', f"Recorrido calculado: {recorrido}\n\n")
+
+            # Intersecciones
+            self.text_result.insert('end', "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+            self.text_result.insert('end', "📍  Intersecciones\n")
+            self.text_result.insert('end', "Se resuelve f(x)=0 para encontrar raíces (eje X) y se evalúa f(0) para la intersección con el eje Y.\n")
+            raices, y0 = intersecciones(f)
+            self.text_result.insert('end', f"Raíces encontradas (f(x)=0): {raices}\n")
+            self.text_result.insert('end', f"Intersección con eje Y (f(0)): {y0}\n\n")
         except Exception as e:
             messagebox.showerror("Error de parseo", str(e))
             return
-
-        dominio = calcular_dominio(f)
-        recorrido = calcular_recorrido(f, dominio)
-        raices, y0 = intersecciones(f)
-
-        self.text_result.insert('end', f"Dominio: {dominio}\n")
-        self.text_result.insert('end', f"Recorrido: {recorrido}\n")
-        self.text_result.insert('end', f"Intersecciones eje X: {raices}\n")
-        self.text_result.insert('end', f"Intersección eje Y: {y0}\n\n")
 
         eval_info = None
         if valor_txt:

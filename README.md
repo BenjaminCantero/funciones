@@ -8,7 +8,7 @@ Aplicación para analizar funciones matemáticas, desarrollada para MAT1185 - Un
 - Cálculo de dominio, recorrido, intersecciones y evaluación paso a paso.
 - Gráficas profesionales con Matplotlib.
 - Manejo de errores y discontinuidades.
-- Arquitectura modular: `main.py`, `ui.py`, `core.py`, `plot.py`.
+- Arquitectura modular: `main.py`, `ui.py`, `core.py`, `plot.py`, `config.py`, `utils.py`.
 
 ## Requisitos
 - Python 3.8 o superior
@@ -42,10 +42,27 @@ Aplicación para analizar funciones matemáticas, desarrollada para MAT1185 - Un
 - Solo se admite la variable `x`.
 - Si la función tiene discontinuidades, la gráfica las omitirá en esos puntos.
 
+
 ## Estructura del proyecto
 - `main.py`: punto de entrada.
-- `ui.py`: interfaz gráfica.
-- `core.py`: lógica matemática.
-- `plot.py`: funciones de graficado.
+- `ui.py`: interfaz gráfica y lógica de pestañas.
+- `core.py`: lógica matemática y helpers.
+- `plot.py`: funciones de graficado con Matplotlib.
+- `config.py`: configuración y constantes globales.
+- `utils.py`: utilidades y validaciones auxiliares.
+
+## Cumplimiento de la rúbrica
+El proyecto cumple con los siguientes criterios:
+- Evaluación de funciones simbólicas.
+- Cálculo y justificación paso a paso de dominio, recorrido e intersecciones.
+- Evaluación en un punto y marcado en la gráfica.
+- Gráfica profesional con dominio, recorrido, intersecciones, títulos, etiquetas y colores.
+- Manejo de errores y entradas inválidas.
+- Arquitectura modular y código limpio.
+- Interfaz intuitiva y amigable con pestañas e instrucciones.
+- Documentación y repositorio colaborativo en GitHub.
+
+---
+Desarrollado para fines educativos. Para dudas o mejoras, abre un issue en el repositorio.
 
 S
