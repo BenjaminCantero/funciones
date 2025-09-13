@@ -1,8 +1,17 @@
+"""
+core.py
+Funciones matemáticas principales para el Analizador de Funciones
+"""
+from typing import Any, Tuple, Dict, Union
 import sympy as sp
 import math
 x = sp.Symbol('x')
 
 def limpiar_input(raw: str) -> str:
+    """
+    Limpia la entrada del usuario para sympy.
+    Reemplaza '^' por '**', elimina espacios y agrega '*' donde falta.
+    """
     s = raw.strip()
     s = s.replace('^', '**')
     s = s.replace(' ', '')
@@ -18,7 +27,10 @@ def limpiar_input(raw: str) -> str:
     out = out.replace('**', '^TEMP^').replace('* *', '*').replace('^TEMP^', '**')
     return out
 
-def parsear_funcion(funcion_str: str):
+def parsear_funcion(funcion_str: str) -> Any:
+    """
+    Convierte el string limpiado a expresión sympy.
+    """
     if not funcion_str or funcion_str.strip() == "":
         raise ValueError("No ingresaste ninguna función.")
     s = limpiar_input(funcion_str)
@@ -28,14 +40,20 @@ def parsear_funcion(funcion_str: str):
     except Exception as e:
         raise ValueError(f"Sympy no pudo interpretar la función: {e}")
 
-def calcular_dominio(f):
+def calcular_dominio(f: Any) -> Union[Any, str]:
+    """
+    Calcula el dominio simbólico de la función.
+    """
     try:
         dom = sp.calculus.util.continuous_domain(f, x, sp.S.Reals)
         return dom
     except Exception as e:
         return f"No se pudo determinar simbólicamente ({e})"
 
-def calcular_recorrido(f, dominio):
+def calcular_recorrido(f: Any, dominio: Any) -> Union[Any, str]:
+    """
+    Calcula el recorrido simbólico de la función.
+    """
     try:
         if isinstance(dominio, str):
             raise Exception("Dominio simbólico no disponible")
@@ -44,7 +62,10 @@ def calcular_recorrido(f, dominio):
     except Exception as e:
         return f"No se pudo calcular simbólicamente ({e})"
 
-def intersecciones(f):
+def intersecciones(f: Any) -> Tuple[Any, Any]:
+    """
+    Calcula raíces (eje X) y f(0) (eje Y).
+    """
     try:
         raices = sp.solve(sp.Eq(f, 0), x)
     except Exception:
@@ -55,8 +76,11 @@ def intersecciones(f):
         y0 = "No se pudo calcular f(0)"
     return raices, y0
 
-def evaluar_paso_a_paso(f, valor_x):
-    pasos = {}
+def evaluar_paso_a_paso(f: Any, valor_x: Any) -> Dict[str, Any]:
+    """
+    Muestra el paso a paso de la evaluación de la función en un punto.
+    """
+    pasos: Dict[str, Any] = {}
     pasos['expresion_original'] = sp.simplify(f)
     try:
         pasos['sustitucion'] = f.subs(x, valor_x)
@@ -72,7 +96,10 @@ def evaluar_paso_a_paso(f, valor_x):
         pasos['valor_numerico'] = pasos['sustitucion']
     return pasos
 
-def generar_muestra_x(dominio_sym, npoints=500, rango_extra=5):
+def generar_muestra_x(dominio_sym: Any, npoints: int = 500, rango_extra: int = 5) -> list:
+    """
+    Genera una lista de puntos x para graficar evitando discontinuidades.
+    """
     xs = []
     try:
         if isinstance(dominio_sym, (sp.Union, sp.Interval)):

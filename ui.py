@@ -1,48 +1,52 @@
+"""
+ui.py
+Interfaz gráfica principal del Analizador de Funciones
+"""
+from typing import Any
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox, scrolledtext
 import sympy as sp
 import traceback
-
 from core import parsear_funcion, calcular_dominio, calcular_recorrido, intersecciones, evaluar_paso_a_paso
 from plot import graficar_funcion
+from config import TITULO_GRAFICA
 
 class AnalizadorApp:
-    def __init__(self, root):
+    """
+    Clase principal para la interfaz gráfica del Analizador de Funciones.
+    """
+    def __init__(self, root: Any):
         self.root = root
-        self.root.title("Analizador de Funciones - MAT1185")
+        self.root.title(TITULO_GRAFICA)
         self.root.geometry("800x660")
         self.root.resizable(False, False)
-
         self.estilo = ttk.Style("flatly")
-
-        # Placeholder config
+        # Configuración de placeholders
         self.placeholder_funcion = " Ejemplo: 2x^2 + 4"
         self.placeholder_color = "grey"
         self.text_color = "black"
         self.placeholder_activo = True
-
+        # Crear componentes UI
         self._crear_titulo()
         self._crear_entradas()
         self._crear_botones()
         self._crear_resultados()
         self._crear_pie()
 
-    def _crear_titulo(self):
+    def _crear_titulo(self) -> None:
         ttk.Label(self.root, text="Analizador de Funciones", font=("Segoe UI", 18, "bold")).pack(pady=12)
 
-    def _crear_entradas(self):
+    def _crear_entradas(self) -> None:
         frame = ttk.Frame(self.root)
         frame.pack(pady=5)
-
         self.entry_funcion = self._entrada(frame, "Función f(x):", 0, self.placeholder_funcion, 45, placeholder=True)
         self.entry_valor = self._entrada(frame, "Valor de x (opcional):", 1, "", 20)
 
-    def _entrada(self, parent, texto, fila, valor_defecto="", ancho=30, placeholder=False):
+    def _entrada(self, parent: Any, texto: str, fila: int, valor_defecto: str = "", ancho: int = 30, placeholder: bool = False) -> Any:
         ttk.Label(parent, text=texto).grid(row=fila, column=0, sticky='w', padx=6, pady=6)
         entry = ttk.Entry(parent, width=ancho, font=("Consolas", 11))
         entry.grid(row=fila, column=1, padx=6, pady=6)
-
         if placeholder:
             entry.insert(0, valor_defecto)
             entry.configure(foreground=self.placeholder_color)
@@ -50,27 +54,25 @@ class AnalizadorApp:
             entry.bind("<FocusOut>", self._on_focusout_funcion)
         elif valor_defecto:
             entry.insert(0, valor_defecto)
-
         return entry
 
-    def _crear_botones(self):
+    def _crear_botones(self) -> None:
         frame = ttk.Frame(self.root)
         frame.pack(pady=10)
-
         self._boton(frame, "Analizar", self.on_analizar, 0, PRIMARY)
         self._boton(frame, "Limpiar", self.on_limpiar, 1, WARNING)
         self._boton(frame, "Ayuda / Ejemplos", self.show_ayuda, 2, INFO)
 
-    def _boton(self, parent, texto, accion, columna, estilo):
+    def _boton(self, parent: Any, texto: str, accion: Any, columna: int, estilo: Any) -> None:
         btn = ttk.Button(parent, text=texto, command=accion, width=18, bootstyle=estilo)
         btn.grid(row=0, column=columna, padx=6)
 
-    def _crear_resultados(self):
+    def _crear_resultados(self) -> None:
         ttk.Label(self.root, text="Resultados detallados:", font=("Segoe UI", 11, "bold")).pack(pady=(8, 4))
         self.text_result = scrolledtext.ScrolledText(self.root, height=16, width=94, font=("Consolas", 10))
         self.text_result.pack(padx=10, pady=4)
 
-    def _crear_pie(self):
+    def _crear_pie(self) -> None:
         pie_texto = (
             "Incluye: Dominio, Recorrido, Intersecciones, Evaluación simbólica, Gráfica y errores manejados."
         )
